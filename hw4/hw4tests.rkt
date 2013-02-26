@@ -60,9 +60,21 @@
 (define funny-test (stream-for-n-steps funny-number-stream 16))
 
 ; a zero-argument function: call (one-visual-test) to open the graphics window, etc.
-;(define (one-visual-test)
-;  (place-repeatedly (open-window) 0.5 (cycle-lists nums files) 27))
+(define (one-visual-test)
+  (place-repeatedly (open-window) 0.5 (cycle-lists nums files) 27))
 
 ; similar to previous but uses only two files and one position on the grid
 (define (visual-zero-only)
  (place-repeatedly (open-window) 0.5 (stream-add-zero dan-then-dog) 27))
+
+
+; my tests
+
+(define vec (vector  (cons 1 2) (cons 2 3) 4 ( cons 3 4)))
+
+(define (should-eq e1 e2)
+  (if (equal? e1 e2)
+      #t
+      (error (string-append "following are not equal!:" e1 e2))))
+
+(should-eq (vector-assoc 2 vec) (cons 2 3))

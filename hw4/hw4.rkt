@@ -39,9 +39,26 @@
   (λ () (cons (cons 0 (car pr))
               (stream-add-zero (cdr pr)))))
 
-(define (cycle-list xs ys)
+(define (cycle-lists xs ys)
+  (define (f n)
+    (cons 
+     (cons (list-nth-mod xs n) 
+           (list-nth-mod ys n))
+          (λ () (f (+ n 1)))))
+  (λ () (f 0)))
+
+(define (vector-assoc v vec)
+  (define (v-ass n)
+    (cond [(= n (vector-length vec)) #f]
+          [(and (pair? (vector-ref vec n))
+                (equal? (car (vector-ref vec n)) v))
+           (vector-ref vec n)
+           ]
+          [#t (v-ass (+ n 1))]))
+  (v-ass 0))
+    
+                
   
-  )
   
   
   
