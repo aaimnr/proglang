@@ -71,6 +71,7 @@
 ; my tests
 
 (define vec (vector  (cons 1 2) (cons 2 3) 4 ( cons 3 4)))
+(define lst (list (cons 1 2) (cons 2 3) (cons 3 4) (cons 4 5)))
 
 (define (should-eq e1 e2)
   (if (equal? e1 e2)
@@ -78,3 +79,5 @@
       (error (string-append "following are not equal!:" e1 e2))))
 
 (should-eq (vector-assoc 2 vec) (cons 2 3))
+
+(should-eq ((cached-assoc lst 1) 2) (cons 2 3))

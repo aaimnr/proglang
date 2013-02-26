@@ -59,7 +59,20 @@
     
                 
   
-  
+  (define (cached-assoc xs n)
+    (letrec ([cur-pos 0]
+      [memo (make-vector n #f)])
+    (λ (v) 
+      (let ([ans (vector-assoc v memo)])
+        (if ans
+            (cdr ans)
+            (let ([new-ans (assoc v xs)])
+              (begin
+                (vector-set! memo cur-pos (cons v new-ans))
+                (set! cur-pos (remainder (+ cur-pos 1) n))
+                new-ans)))))))
+    
+     
   
   
   
