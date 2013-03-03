@@ -65,7 +65,7 @@
 
 ; similar to previous but uses only two files and one position on the grid
 (define (visual-zero-only)
- (place-repeatedly (open-window) 0.5 (stream-add-zero dan-then-dog) 27))
+  (place-repeatedly (open-window) 0.5 (stream-add-zero dan-then-dog) 27))
 
 
 ; my tests
@@ -81,3 +81,7 @@
 (should-eq (vector-assoc 2 vec) (cons 2 3))
 
 (should-eq ((cached-assoc lst 1) 2) (cons 2 3))
+
+(define a 2)
+(while-less 7 do (begin (set! a (+ a 1)) (print "x") a))
+(while-less 7 do (begin (set! a (+ a 1)) (print "x") a))

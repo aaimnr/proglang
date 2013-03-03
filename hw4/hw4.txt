@@ -69,7 +69,6 @@
             (let ([new-ans (assoc v xs)])
               (begin
                 (vector-set! memo cur-pos (cons v new-ans))
-                (print memo)
                 (set! cur-pos (remainder (+ cur-pos 1) n))
                 new-ans)))))))
 
