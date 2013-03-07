@@ -52,6 +52,11 @@
 (define (eval-under-env e env)
   (cond [(var? e) 
          (envlookup env (var-string e))]
+        
+        [(int? e) e]
+        [(aunit? e) e]
+        [(closure? e) e]
+         
         [(add? e) 
          (let ([v1 (eval-under-env (add-e1 e) env)]
                [v2 (eval-under-env (add-e2 e) env)])
@@ -60,6 +65,76 @@
                (int (+ (int-num v1) 
                        (int-num v2)))
                (error "MUPL addition applied to non-number")))]
+       
+        [(ifgreater? e)
+         (let ([v1 (eval-under-env (ifgreater-e1 e) env)]
+               [v2 (eval-under-env (ifgreater-e2 e) env)])
+           (if (and (int? v1)
+                    (int? v2))
+               (if (> (int-num v1) (int-num v2))
+                   (eval-under-env (ifgreater-e3 e) env)
+                   (eval-under-env (ifgreater-e4 e) env)
+                   )
+               (error "MUPL addition applied to non-number")))]
+       
+        ;(mlet var e body)
+        [(mlet? e)
+         (letrec ([v-e (eval-under-env (mlet-e e) env)]
+                  [new-env (cons (cons (mlet-var e) v-e) env)])
+             (eval-under-env (mlet-body e) new-env))]
+        
+        ;(apair e1 e2)
+        [(apair? e)
+         (let ([v1 (eval-under-env (apair-e1 e) env)]
+               [v2 (eval-under-env (apair-e2 e) env)])
+                             (apair v1 v2))]
+        
+        ;(fst e)
+        [(fst? e)
+         (let ([v (eval-under-env (fst-e e) env)])
+           (if (apair? v)
+               (apair-e1 v)
+               (error "MUPL fst aplied to non-pair")))]
+        
+        ;(snd e)
+        [(snd? e)
+         (let ([v (eval-under-env (snd-e e) env)])
+           (if (apair? v)
+               (apair-e2 v)
+               (error "MUPL snd aplied to non-pair")))]
+        
+           
+        
+        [(isaunit? e)
+         (let ([v (eval-under-env (isaunit-e e) env)])
+           (if (isaunit? v)
+               (int 1)
+               (int 0)))]
+        
+        
+        ;(struct fun  (nameopt formal body)
+        [(fun? e)
+         (closure env e)]
+        
+        
+        ;(struct call (funexp actual) 
+        [(call? e)
+         (letrec ([f (closure-fun e)]
+                  [
+        
+        
+         
+         
+         
+             
+        
+        
+        
+        
+           
+           
+             
+        
         ;; CHANGE add more cases here
         [#t (error "bad MUPL expression")]))
 
