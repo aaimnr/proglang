@@ -23,7 +23,7 @@ end
 
 class MyPiece < Piece
   # The constant All_My_Pieces should be declared here
-All_My_Pieces = #All_Pieces +
+All_My_Pieces = All_Pieces +
 [rotations([[0,0],[1,0],[0,1],[1,1],[2,1]]),
  [[[-2,0],[-1,0],[0,0],[1,0],[2,0]], #long, horizontal
  [[0,-2],[0,-1],[0,0],[0,1],[0,2]]],#long, vertical
@@ -66,7 +66,8 @@ end
     displacement = @current_block.position
     elements_count = locations.length
 
-    (0..( elements_count-1)).each{|index| 
+    #range high value adjusted dynamically
+    (0..(elements_count-1)).each{|index| 
       current = locations[index];
       @grid[current[1]+displacement[1]][current[0]+displacement[0]] = 
       @current_pos[index]
