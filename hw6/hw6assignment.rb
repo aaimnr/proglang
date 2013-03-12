@@ -26,8 +26,8 @@ class MyPiece < Piece
 All_My_Pieces = All_Pieces +
 [rotations([[0,0],[1,0],[0,1],[1,1],[2,1]]),
  [[[-2,0],[-1,0],[0,0],[1,0],[2,0]], #long, horizontal
- [[0,-2],[0,-1],[0,0],[0,1],[0,2]]],#long, vertical
- [[[0,0],[0,1],[1,1]]]
+  [[0,-2],[0,-1],[0,0],[0,1],[0,2]]],#long, vertical
+ rotations([[0,0],[0,1],[1,1]]) #3 piece block
 ]
   # your enhancements here
   def self.next_piece (board)
