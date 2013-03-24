@@ -37,20 +37,20 @@ class GeometryValue < GeometryExpression
   private
   # some helper methods that may be generally useful
   def real_close(r1,r2) 
-      (r1 - r2).abs < GeometryExpression::Epsilon
+    (r1 - r2).abs < GeometryExpression::Epsilon
   end
   def real_close_point(x1,y1,x2,y2) 
-      real_close(x1,x2) && real_close(y1,y2)
+    real_close(x1,x2) && real_close(y1,y2)
   end
   # two_points_to_line could return a Line or a VerticalLine
   def two_points_to_line(x1,y1,x2,y2) 
-      if real_close(x1,x2)
-        VerticalLine.new x1
-      else
-        m = (y2 - y1).to_f / (x2 - x1)
-        b = y1 - m * x1
-        Line.new(m,b)
-      end
+    if real_close(x1,x2)
+      VerticalLine.new x1
+    else
+      m = (y2 - y1).to_f / (x2 - x1)
+      b = y1 - m * x1
+      Line.new(m,b)
+    end
   end
 
   public
@@ -117,6 +117,45 @@ class Point < GeometryValue
     @x = x
     @y = y
   end
+
+  def eval_prog env 
+    self # all values evaluate to self
+  end
+  def preprocess_prog
+    self # no pre-processing to do here
+  end
+  def shift(dx,dy)
+    Point.new(@x+dx,@y+dy) #
+  end
+  def intersect other
+    other.intersectPoint self # will be NoPoints but follow double-dispatch
+  end
+
+  def intersectNoPoint p
+    p # intersection with point and no-points is no-points
+  end
+
+  def intersectPoint p
+    if p.x == @x and p.y == @y
+      p
+    else
+      NoPoints
+    end
+  end
+
+
+  def intersectLine line
+    todo # intersection with line and no-points is no-points
+  end
+  def intersectVerticalLine vline
+    todo # intersection with line and no-points is no-points
+  end
+  # if self is the intersection of (1) some shape s and (2) 
+  # the line containing seg, then we return the intersection of the 
+  # shape s and the seg.  seg is an instance of LineSegment
+  def intersectWithSegmentAsLineResult seg
+    todo
+  end
 end
 
 class Line < GeometryValue
@@ -127,6 +166,36 @@ class Line < GeometryValue
     @m = m
     @b = b
   end
+
+  def eval_prog env 
+    self # all values evaluate to self
+  end
+  def preprocess_prog
+    self # no pre-processing to do here
+  end
+  def shift(dx,dy)
+    Line.new(@m,@b+dy-@m*dx) # shifting no-points is no-points
+  end
+  def intersect other
+    other.intersectLine self # will be NoPoints but follow double-dispatch
+  end
+  def intersectNoPoint n
+    n # intersection with point and no-points is no-points
+  end
+  def intersectPoint p
+    todo # intersection with line and no-points is no-points
+  end
+  def intersectVerticalLine vline
+    todo # intersection with line and no-points is no-points
+  end
+  # if self is the intersection of (1) some shape s and (2) 
+  # the line containing seg, then we return the intersection of the 
+  # shape s and the seg.  seg is an instance of LineSegment
+  def intersectWithSegmentAsLineResult seg
+    todo
+  end
+
+
 end
 
 class VerticalLine < GeometryValue
@@ -136,6 +205,35 @@ class VerticalLine < GeometryValue
   def initialize x
     @x = x
   end
+
+  def eval_prog env 
+    self # all values evaluate to self
+  end
+  def preprocess_prog
+    self # no pre-processing to do here
+  end
+  def shift(dx,dy)
+    VerticalLine.new(x+dx) # shifting no-points is no-points
+  end
+  def intersect other
+    other.intersectPoint self # will be NoPoints but follow double-dispatch
+  end
+  def intersectNoPoint p
+    p # intersection with point and no-points is no-points
+  end
+  def intersectLine line
+    todo # intersection with line and no-points is no-points
+  end
+  def intersectPoint p
+    todo # intersection with line and no-points is no-points
+  end
+  # if self is the intersection of (1) some shape s and (2) 
+  # the line containing seg, then we return the intersection of the 
+  # shape s and the seg.  seg is an instance of LineSegment
+  def intersectWithSegmentAsLineResult seg
+    todo
+  end
+
 end
 
 class LineSegment < GeometryValue
@@ -151,43 +249,105 @@ class LineSegment < GeometryValue
     @x2 = x2
     @y2 = y2
   end
-end
 
-# Note: there is no need for getter methods for the non-value classes
-
-class Intersect < GeometryExpression
-  # *add* methods to this class -- do *not* change given code and do not
-  # override any methods
-  def initialize(e1,e2)
-    @e1 = e1
-    @e2 = e2
+  def eval_prog env 
+    self # all values evaluate to self
   end
-end
+  def preprocess_prog
+    if real_close_point(x1,y1,x2,y2) 
+      return Point.new x1,y1
+     end
+      
+      if ((real_close x1,x2) and (y1>y2) or (not real_close x1,x2) and (x1 > x2))
+        puts 'a'
+        return LineSegment.new(x2,y2,x1,y1)
+      else
+        puts 'b'
+        return self
+      end
+      puts 'c'
+    end
 
-class Let < GeometryExpression
-  # *add* methods to this class -- do *not* change given code and do not
-  # override any methods
-  def initialize(s,e1,e2)
-    @s = s
-    @e1 = e1
-    @e2 = e2
-  end
-end
+    def shift(dx,dy)
+      LineSegment.new(x1+dx,y1+dy,x2+dx,y2+dy) # shifting no-points is no-points
+    end
+    def intersect other
+      other.intersectLineSegment self # will be NoPoints but follow double-dispatch
+    end
+    def intersectNoPoint p
+      p # intersection with point and no-points is no-points
+    end
+    def intersectLine line
+      todo # intersection with line and no-points is no-points
+    end
+    def intersectVerticalLine vline
+      todo # intersection with line and no-points is no-points
+    end
+    # if self is the intersection of (1) some shape s and (2) 
+    # the line containing seg, then we return the intersection of the 
+    # shape s and the seg.  seg is an instance of LineSegment
+    def intersectWithSegmentAsLineResult seg
+      todo
+    end
 
-class Var < GeometryExpression
-  # *add* methods to this class -- do *not* change given code and do not
-  # override any methods
-  def initialize s
-    @s = s
-  end
-end
 
-class Shift < GeometryExpression
-  # *add* methods to this class -- do *not* change given code and do not
-  # override any methods
-  def initialize(dx,dy,e)
-    @dx = dx
-    @dy = dy
-    @e = e
   end
+
+  # Note: there is no need for getter methods for the non-value classes
+
+  class Intersect < GeometryExpression
+    # *add* methods to this class -- do *not* change given code and do not
+    # override any methods
+    def initialize(e1,e2)
+      @e1 = e1
+      @e2 = e2
+    end
+
+    def eval_prog env 
+      nil #todo
+    end
+
+    def preprocess_prog
+      Intersect.new @e1.preprocess_prog , @e2.preprocess_prog
+    end
+
+  end
+
+  class Let < GeometryExpression
+    # *add* methods to this class -- do *not* change given code and do not
+    # override any methods
+    def initialize(s,e1,e2)
+      @s = s
+      @e1 = e1
+      @e2 = e2
+    end
+
+    def eval_prog env 
+      Let.new 
+    end
+
+    def preprocess_prog
+      Let.new s, @e1.preprocess_prog, @e2.preprocess_prog
+    end
+
+  end
+
+  class Var < GeometryExpression
+    # *add* methods to this class -- do *not* change given code and do not
+    # override any methods
+    def initialize s
+      @s = s
+    end
+  end
+
+  class Shift < GeometryExpression
+    # *add* methods to this class -- do *not* change given code and do not
+    # override any methods
+    def initialize(dx,dy,e)
+      @dx = dx
+      @dy = dy
+      @e = e
+    end
+  end
+
 end

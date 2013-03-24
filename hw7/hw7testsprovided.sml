@@ -31,7 +31,7 @@ end;
 
 (* eval_prog tests with Shift*)
 let 
-	val Point(a,b) = (eval_prog (preprocess_prog (Shift(3.0, 4.0, Point(4.0,4.0))), []))
+	val Point(a,b) = (eval_prog(preprocess_prog (Shift(3.0, 4.0, Point(4.0,4.0))), []))
 	val Point(c,d) = Point(7.0,8.0) 
 in
 	if real_equal(a,c) andalso real_equal(b,d)
@@ -48,6 +48,7 @@ in
 	then (print "eval_prog with 'a' in environment is working properly\n")
 	else (print "eval_prog with 'a' in environment is not working properly\n")
 end;
+
 
 
 (* With Variable Shadowing *)
